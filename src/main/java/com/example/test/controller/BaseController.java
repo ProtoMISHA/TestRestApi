@@ -1,6 +1,4 @@
 package com.example.test.controller;
-
-
 import com.example.test.entity.Book;
 import com.example.test.excepiton.NoSuchBookException;
 import com.example.test.excepiton.NotCorrectDataResponse;
@@ -11,9 +9,10 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.Optional;
 
 @RestController
-@RequestMapping("/")
+@RequestMapping("/book")
 public class BaseController {
 
 
@@ -22,40 +21,38 @@ public class BaseController {
 
 
 
-    @GetMapping("/books")
+    @GetMapping("")
     public List<Book> getAllBooks(){
         return bookService.getAllBooks();
     }
 
-    @GetMapping("/books/book/{id}")
+    @GetMapping("/{id}")
     public Book getBook(@PathVariable("id") int id){
-        Book book = bookService.findBookById(id);
-        if(book==null) throw new NoSuchBookException("Book with id " + id +" not exist");
-
-        return book;
+        Optional<Book> book = bookService.findBookById(id);
+        if(book.isEmpty()) throw new NoSuchBookException("Book with id " + id +" not exist");
+        return book.get();
     }
 
 
-    @PutMapping("/books")
+    @PutMapping("/book")
     public Book editBook(@RequestBody Book book){
-        bookService.updateBook(book);
+        bookService.createOrUpdateBook(book);
         return book;
     }
 
 
-    @PostMapping("/books")
+    @PostMapping("/book")
     public Book addBook(@RequestBody Book book){
-        bookService.createBook(book);
+        bookService.createOrUpdateBook(book);
         return book;
     }
 
-    @DeleteMapping("/books/book/{id}")
+    @DeleteMapping("/{id}")
     public String deleteBook(@PathVariable int id){
-        if(bookService.findBookById(id)==null) throw new NoSuchBookException("Book with id " + id +" not exist");
-
-
-        bookService.deleteBook(id);
-        return "Книга была удалена, ее id " + id;
+        Optional<Book> book = bookService.findBookById(id);
+        if(book.isEmpty()) throw new NoSuchBookException("Book with id " + id + " not exist");
+        bookService.deleteBook(book.get());
+        return "Book was deleted " + id;
     }
 
     @ExceptionHandler

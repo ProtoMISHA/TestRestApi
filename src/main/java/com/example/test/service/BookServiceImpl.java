@@ -1,13 +1,11 @@
 package com.example.test.service;
-
-
 import com.example.test.dao.BookDAO;
 import com.example.test.entity.Book;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-
 import javax.transaction.Transactional;
 import java.util.List;
+import java.util.Optional;
 
 @Service
 public class BookServiceImpl implements BookService {
@@ -19,31 +17,27 @@ public class BookServiceImpl implements BookService {
 
     @Override
     @Transactional
-    public Book findBookById(int id) {
-        return bookDAO.findBookById(id);
+    public Optional<Book> findBookById(int id) {
+        return bookDAO.findById(id);
     }
 
     @Override
     @Transactional
     public List<Book> getAllBooks() {
-        return bookDAO.getAllBooks();
+        return bookDAO.findAll();
+    }
+
+
+
+    @Override
+    @Transactional
+    public void createOrUpdateBook(Book book) {
+        bookDAO.save(book);
     }
 
     @Override
     @Transactional
-    public void updateBook(Book book) {
-        bookDAO.updateBook(book);
-    }
-
-    @Override
-    @Transactional
-    public void createBook(Book book) {
-        bookDAO.createBook(book);
-    }
-
-    @Override
-    @Transactional
-    public void deleteBook(int id) {
-        bookDAO.deleteBook(id);
+    public void deleteBook(Book book){
+        bookDAO.delete(book);
     }
 }
